@@ -1,0 +1,67 @@
+#include <stdio.h>
+
+int main() {
+    int n;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+
+    int pid[20], at[20], bt[20], pr[20];
+    int ct[20], tat[20], wt[20], done[20];
+    int time = 0, completed = 0;
+    float avg_tat = 0, avg_wt = 0;
+
+    for (int i = 0; i < n; i++) {
+        pid[i] = i + 1;
+        printf("Enter AT, BT, Priority for P%d: ", i + 1);
+        scanf("%d %d %d", &at[i], &bt[i], &pr[i]);
+        done[i] = 0;
+    }
+
+    printf("\nGantt Chart:\n");
+
+    while (completed < n) {
+        int idx = -1;
+        int highestPr = 9999; 
+
+        
+        for (int i = 0; i < n; i++) {
+            if (at[i] <= time && !done[i]) {
+                if (pr[i] < highestPr) {
+                    highestPr = pr[i];
+                    idx = i;
+                }
+            }
+        }
+
+        if (idx != -1) {
+            printf("| P%d (%d-%d) ", pid[idx], time, time + bt[idx]);
+            time += bt[idx];
+            ct[idx] = time;
+            tat[idx] = ct[idx] - at[idx];
+            wt[idx] = tat[idx] - bt[idx];
+            avg_tat += tat[idx];
+            avg_wt += wt[idx];
+            done[idx] = 1;
+            completed++;
+        } else {
+            time++; 
+        }
+    }
+    printf("|\n");
+
+    printf("\nResult Table:\n");
+    printf("PID\tAT\tBT\tPR\tCT\tTAT\tWT\n");
+    for (int i = 0; i < n; i++) {
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
+               pid[i], at[i], bt[i], pr[i],
+               ct[i], tat[i], wt[i]);
+    }
+
+    avg_tat /= n;
+    avg_wt /= n;
+
+    printf("\nAverage Turnaround Time = %.2f", avg_tat);
+    printf("\nAverage Waiting Time = %.2f\n", avg_wt);
+
+    return 0;
+}
