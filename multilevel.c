@@ -78,7 +78,6 @@ int main() {
     Process *current = NULL;
 
     while (completed < n) {
-        // add arrivals
         while (i < n && processes[i].arrival <= current_time) {
             if (processes[i].type == 0)
                 enqueue(&systemQ, &processes[i]);
@@ -87,20 +86,17 @@ int main() {
             i++;
         }
 
-        // preemption
         if (current != NULL && current->type == 1 && !isEmpty(&systemQ)) {
             enqueue(&userQ, current);
             current = NULL;
         }
 
-        // select next
         if (current == NULL) {
             if (!isEmpty(&systemQ)) current = dequeue(&systemQ);
             else if (!isEmpty(&userQ)) current = dequeue(&userQ);
             else { current_time++; continue; }
         }
 
-        // execute
         current->remaining--;
         current_time++;
 
@@ -113,7 +109,6 @@ int main() {
         }
     }
 
-    // print results
     printf("\nID | Type   | AT | BT | CT | WT | TAT\n");
     double totalWT = 0, totalTAT = 0;
     for (int j = 0; j < n; j++) {
